@@ -20,6 +20,7 @@ import no.nav.security.mock.oauth2.grant.TokenExchangeGrant
 import no.nav.security.mock.oauth2.missingParameter
 import okhttp3.Headers
 import okhttp3.HttpUrl
+import java.time.Instant
 
 data class OAuth2HttpRequest(
     val headers: Headers,
@@ -31,11 +32,11 @@ data class OAuth2HttpRequest(
     val formParameters: Parameters = Parameters(body)
     val cookies: Map<String, String> = headers["Cookie"]?.keyValuesToMap(";") ?: emptyMap()
 
-    fun asTokenExchangeRequest(): TokenRequest {
+    fun asTokenExchangeRequest(systemTime: Instant? = null): TokenRequest {
         val httpRequest: HTTPRequest = this.asNimbusHTTPRequest()
         var clientAuthentication = httpRequest.clientAuthentication()
         if (clientAuthentication.method == ClientAuthenticationMethod.PRIVATE_KEY_JWT) {
-            clientAuthentication = clientAuthentication.requirePrivateKeyJwt(this.url.toString(), 120)
+            clientAuthentication = clientAuthentication.requirePrivateKeyJwt(this.url.toString(), 120, systemTime)
         }
         val tokenExchangeGrant = TokenExchangeGrant.parse(formParameters.map)
 

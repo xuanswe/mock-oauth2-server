@@ -41,7 +41,7 @@ internal class RefreshTokenGrantHandler(
             idToken = idToken.serialize(),
             accessToken = accessToken.serialize(),
             refreshToken = refreshToken,
-            expiresIn = idToken.expiresIn(),
+            expiresIn = idToken.expiresIn(tokenProvider.systemTime),
             scope = scope,
         )
     }

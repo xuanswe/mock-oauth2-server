@@ -79,7 +79,8 @@ fun TokenRequest.clientIdAsString(): String =
     this.clientAuthentication?.clientID?.value ?: this.clientID?.value
         ?: throw OAuth2Exception(OAuth2Error.INVALID_CLIENT, "client_id cannot be null")
 
-fun SignedJWT.expiresIn(): Int = Duration.between(Instant.now(), this.jwtClaimsSet.expirationTime.toInstant()).seconds.toInt()
+fun SignedJWT.expiresIn(systemTime: Instant? = null): Int =
+    Duration.between(systemTime ?: Instant.now(), this.jwtClaimsSet.expirationTime.toInstant()).seconds.toInt()
 
 fun SignedJWT.verifySignatureAndIssuer(
     issuer: Issuer,
@@ -109,11 +110,12 @@ fun HTTPRequest.clientAuthentication() =
 fun ClientAuthentication.requirePrivateKeyJwt(
     requiredAudience: String,
     maxLifetimeSeconds: Long,
+    systemTime: Instant? = null
 ): PrivateKeyJWT =
     (this as? PrivateKeyJWT)
         ?.let {
             when {
-                it.clientAssertion.expiresIn() > maxLifetimeSeconds -> {
+                it.clientAssertion.expiresIn(systemTime) > maxLifetimeSeconds -> {
                     invalidRequest("invalid client_assertion: client_assertion expiry is too long( should be < $maxLifetimeSeconds)")
                 }
                 !it.clientAssertion.jwtClaimsSet.audience.contains(requiredAudience) -> {

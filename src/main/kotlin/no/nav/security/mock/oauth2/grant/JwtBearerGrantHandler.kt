@@ -31,7 +31,7 @@ internal class JwtBearerGrantHandler(private val tokenProvider: OAuth2TokenProvi
         return OAuth2TokenResponse(
             tokenType = "Bearer",
             accessToken = accessToken.serialize(),
-            expiresIn = accessToken.expiresIn(),
+            expiresIn = accessToken.expiresIn(tokenProvider.systemTime),
             scope = tokenRequest.responseScope(),
         )
     }

@@ -28,7 +28,7 @@ internal class PasswordGrantHandler(
             tokenType = "Bearer",
             accessToken = accessToken.serialize(),
             idToken = idToken.serialize(),
-            expiresIn = accessToken.expiresIn(),
+            expiresIn = accessToken.expiresIn(tokenProvider.systemTime),
             scope = scope,
         )
     }

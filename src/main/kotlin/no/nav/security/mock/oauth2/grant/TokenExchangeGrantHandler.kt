@@ -16,7 +16,7 @@ internal class TokenExchangeGrantHandler(private val tokenProvider: OAuth2TokenP
         issuerUrl: HttpUrl,
         oAuth2TokenCallback: OAuth2TokenCallback,
     ): OAuth2TokenResponse {
-        val tokenRequest = request.asTokenExchangeRequest()
+        val tokenRequest = request.asTokenExchangeRequest(tokenProvider.systemTime)
         val receivedClaimsSet = tokenRequest.subjectToken().jwtClaimsSet
         val accessToken =
             tokenProvider.exchangeAccessToken(
@@ -29,7 +29,7 @@ internal class TokenExchangeGrantHandler(private val tokenProvider: OAuth2TokenP
             tokenType = "Bearer",
             issuedTokenType = "urn:ietf:params:oauth:token-type:access_token",
             accessToken = accessToken.serialize(),
-            expiresIn = accessToken.expiresIn(),
+            expiresIn = accessToken.expiresIn(tokenProvider.systemTime),
         )
     }
 }

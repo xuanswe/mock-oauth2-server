@@ -25,7 +25,7 @@ internal class ClientCredentialsGrantHandler(
         return OAuth2TokenResponse(
             tokenType = "Bearer",
             accessToken = accessToken.serialize(),
-            expiresIn = accessToken.expiresIn(),
+            expiresIn = accessToken.expiresIn(tokenProvider.systemTime),
             scope = tokenRequest.scope?.toString(),
         )
     }
